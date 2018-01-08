@@ -256,6 +256,87 @@ https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_pruning1.jpg
 
 https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_config1.jpg
 
-Configuration ici : 
+*Configuration ici :* 
 
 https://reussirsonccna.fr/vtp-vlan-trunking-protocol/
+
+http://ressources-info.fr/tutoriels-reseaux/afficher/25/
+
+### V - Sécuriser ses ports
+
+Il est possible de faire un contrôle sur les ports, en limitant des @MAC.
+Il faut utiliser l'option "Port-Security".
+
+Il existe deux méthodes :
+- Enregistrer manuellement l'@ MAC autorisée
+- Prendre comme @MAC autorisée celle de l'hôte qui va se connecter et envoyer une trame en premier à ce port du Switch Cisco.
+
+**Voir la politique de sécurité**
+
+
+*show port-security* : Où est active la protection
+
+*show port-security address**: Voir les @MAC autorisées sur chacun des ports sécurités
+
+*show port-security interface fastEhernet x/x* : Voir le détail de sécurité d'une interface
+
+**Sécurisation manuelle**
+
+Switch>enable
+
+Switch#Configure terminal
+
+Switch(config)#interface FastEthernet 0/2
+
+Switch(config-if)#switchport mode access
+
+Switch(config-if)#switchport port-security
+
+Switch(config-if)#switchport port-security mac-address 0001.4299.E010
+
+*Cette série de commandes va autoriser uniquement l'@MAC 001{...} à se connecter à l'I FE2*
+
+**Sécurisation automatique**
+
+Switch>enable
+
+Switch#Configure terminal
+
+Switch(config)#interface FastEthernet 0/3
+
+Switch(config-if)#switchport mode access
+
+Switch(config-if)#switchport port-security
+
+Switch(config-if)#switchport port-security mac-address sticky
+
+*Cette série de commande fait en sorte que le premier poste connecté sera le propriétaire, se faisant il envois une trame lors de sa connexion*
+
+**Réagir à une violation**
+- La méthode "shutdown" (Désactiver interface quand violation)
+- La méthode "Protect" (@MAC inconnue = bloquée)
+- La méthode "restrict" : Alerte SNMP envoyée et le compteur de violation est incrémenté.
+
+
+Switch>enable
+
+Switch#Configure terminal
+
+Switch(config)#interface FastEthernet 0/3
+
+Switch(config-if)#switchport mode access
+
+Switch(config-if)#switchport port-security violation nom_methode
+
+*Ces instructions ajoutent une règle pour un équipement donné*
+
+**Augmenter le nombre d'@ MAC autorisées sur un port**
+
+switchport port-security maximum x
+
+*x est le nombre autorisés*
+
+
+
+
+
