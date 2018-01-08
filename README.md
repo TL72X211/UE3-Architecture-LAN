@@ -80,11 +80,16 @@ Deux entités sont dans le même domaine de collision, et envoient des données 
 C'est la zone du réseau d'où proviennent les trames qui entrent en collision.
 
 - Domaine de collision avec le Hub/Concentrateur :
-https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Hub-300x214.png
+
+![](https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Hub-300x214.png)
+
 - Domaine de collision avec le Bridge / Pont :
-https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Bridge-300x187.png
-- Domaine de collision avec le Switch / Commutateur :).
-https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Switch-300x202.png
+
+![](https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Bridge-300x187.png)
+
+- Domaine de collision avec le Switch / Commutateur :
+
+![](https://reussirsonccna.fr/wp-content/uploads/2012/09/Domaine_collision_Switch-300x202.png)
 
 **Domaine de diffusion :** Équivalent du broadcast.
 
@@ -101,7 +106,7 @@ protocole permettant la communication sur un réseau de type Ethernet :
 - Interrompre activité dès détection d'un autre adaptateur sur le même canal (Détection collision)
 - Wait() avant de retransmettre une trame
 
-*/ Collision_Emilien.png */
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/Collision.PNG)
 
 ### II -  Le modèle en trois couches
 Un bon architecte réseau se doit de mettre en place en priorité les performances, le coût, la tolérance de panne, la rapidité des échanges...
@@ -113,7 +118,7 @@ Ces trois couches sont :
 - Distribution (Distribution Layer)
 - Accès (Access Layer)
 
-http://bibabox.fr/wp-content/uploads/2011/08/schema.jpg
+![](http://bibabox.fr/wp-content/uploads/2011/08/schema.jpg)
 
 **1- Core Layer (ou Backbone)**
 
@@ -146,7 +151,7 @@ Ce **tag** comprend entre autre l'identifiant de VLAN. Ainsi, la trame sera tran
 **VLAN de couche 2 : VLan par @MAC**
 
 On configure le switch pour qu'il récupère l'@ MAC qu'il voit transiter  sur le port, envoi cette @MAC vers un serveur VMPS (VLAN Membership Policy Server) qui fera le lien entre l'@ MAC et le VLAN dans une base de données. C'est le serveur VMPS qui indique au Switch quel VLAN il faut attribuer au port.
-\!/ Tout passe par le serveur, et s'il est en panne, tout tombe en panne.
+\\!/ Tout passe par le serveur, et s'il est en panne, tout tombe en panne.
 
 **VLAN de couche 3 :** (Le plus utilisé)
 - VLAN par sous réseau ==> VLAN 1 =   192.168.0.1/24 && VLAN 2 = 192.168.1.0/24
@@ -171,7 +176,9 @@ Il existe plusieurs types de configurations pour les ports :
 - Mode Trunk (Plusieurs VLAN doivent circuler sur un même lien, comme liaison entre deux switchs, ou un serveur qui à une interface appartenant à plusieurs VLAN)
 - Si VLAN crée et affecté à aucun port, c'est un VLAN de management, on y attribue une @IP
 
-\!/ à un VLAN crée, on attribue un sous-réseau IP dédié.
+\\!/ à un VLAN crée, on attribue un sous-réseau IP dédié.
+
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/VLAN.PNG)
 
 *Configuration complète ici :*
 
@@ -211,33 +218,33 @@ Il existe 3 modes de VTP :
 
 Permet à l'administrateur de faire toutes modifications sur les VLAN et de **propager** vers tout les switchs du réseau.
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-server.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-server.jpg)
 
 **2 - VTP Client** 
 
 **Ne permet pas à l'administrateur de faire des modifications sur les VLAN**, vous recevez un message d'erreur quand vous essayer de créer un VLAN.
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-client.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-client.jpg)
 
 **3 - VTP Transparent :**
 
 Permet à l'admin de faire toutes les modifications sur les VLAN **en local uniquement**, et **ne propage donc pas** ses modifications. (Pratique pour les maquettes...)
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-transparent.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-transparent.jpg)
 
 **Fonctionnement de la Synchronisation :**
 
 A chaque fois qu'un action s'éffectue, la variable RN (Revision Number) s'incrémente, elle est présente sur chaque Switch, permettant à chaque Switch de voir si le numéro est plus petit, si c'est le cas, ils se synchronisent.
 En plus de l'envoyer à chaque modification, le VTP server l'envoie aussi toute les cinq minutes.
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp1.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp1.jpg)
 
 **ATTENTION :** Si un client possède un RN plus élevé que le Switch serveur (équipement venant d'un autre réseau), c'est le serveur qui va se synchroniser avec le nouveau switch. Il faut donc penser à remettre le RN à zéro, pour celà , effectuer un basculement en mode transparent puis client.
 
 **VTP Pruning**
 C'est une fonction du Switch Server à activer, qui permet lors de la rémission, de ne répliquer que les VLAN que l'on comporte, économisant la bande passante.
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_pruning1.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_pruning1.jpg)
 
 **Nota Bene**
 
@@ -254,7 +261,7 @@ https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_pruning1.jpg
 - Configurer un mot de passe pour sécuriser les messages VTP
 - Activer la bonne version (v1 active par défaut)
 
-https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_config1.jpg
+![](https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_config1.jpg)
 
 *Configuration ici :* 
 
