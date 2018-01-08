@@ -128,42 +128,68 @@ Filtrer, router, autoriser (ou non les paquets), c'est la partie liaison et la p
 Connecter les périphériques "end-users" au réseau, que ce soit en Wi-fi, Ethernet, ou autre...
 Elle nécessite de la part de l'administrateur certaines actions (réglage de l'état de chaque port des switchs, mises en place de sécurités...) 
 
+### III - Séparer son réseau - VLAN
 
-
-### III - Séparer son réseau
+Virtual Local Area Network.
 De nos jours, quand on connecte un appareil, il se configure automatiquement (notamment pour les switch), c'est ce qu'on appelle le plug and play.
 
 Cependant si l'on souhaite que certains PC ne communiquent pas avec d'autres, il est nécessaire de faire des VLAN. Séparer son réseau avec les VLAN revient donc à découper son Switch en plusieurs Switch.
 
-**Première solution :**
-On créer le VLAN sur le switch, puis on attribue ce VLAN sur les ports souhaités. 
-Ex: On a un PC, on veut obligatoirement qu'il soit branché sur un port, et ce port aura pour VLAN 18.
+**VLAN de couche 1 : Configuration de ports**
 
-**Seconde solution**
+On créer le VLAN sur le switch, puis on attribue ce VLAN sur les ports souhaités. 
+Un **tag** de 4 octet est ajouté à la trame ethernet. 
+Ce **tag** comprend entre autre l'identifiant de VLAN. Ainsi, la trame sera transmise uniquement aux ports appartenant au vlan identifié dans la trame.
+
+*Ex: On définit que les ports de 1 à 10 soient sur le VLAN 1 et 11 à 20 sur VLAN 2*
+
+**VLAN de couche 2 : VLan par @MAC**
+
 On configure le switch pour qu'il récupère l'@ MAC qu'il voit transiter  sur le port, envoi cette @MAC vers un serveur VMPS (VLAN Membership Policy Server) qui fera le lien entre l'@ MAC et le VLAN dans une base de données. C'est le serveur VMPS qui indique au Switch quel VLAN il faut attribuer au port.
 \!/ Tout passe par le serveur, et s'il est en panne, tout tombe en panne.
 
-**NB :**
+**VLAN de couche 3 :** (Le plus utilisé)
+- VLAN par sous réseau ==> VLAN 1 =   192.168.0.1/24 && VLAN 2 = 192.168.1.0/24
+- VLAN par protocole (IP, IPX, Apple Talk...)
 
-VLAN 0 et 4095 = Réservé pour le système
+**Nota Bene :**
 
-VLAN 1 = VLAN par défaut
+- VLAN 0 et 4095 = Réservé pour le système
+- VLAN 1 = VLAN par défaut, **réservé pour l'administration par convention**
+- VLAN 2 - 1001 = VLAN Ethernet (Plage standard)
+- VLAN 1002  - 1005 = Technologies FDDI et Token Ring (Sont réservés, ce sont d'anciens protocoles réseau)
+- VLAN 1006 - 4094 = VLAN Ethernet - Plage étendue (Utilisé pour les WAN, utilisé par les FAI)
+- Les VLAN ne peuvent pas communiquer ensemble
+- Chaque VLAN est indépendant (Chaque modif est à faire sur chaque VLAN)
+- Chaque VLAN doit-être adressé
+- Un port ne peut a voir qu'un seul VLAN
 
-VLAN 2 - 1001 = VLAN Ethernet 
+**CONFIGURER SON VLAN**
 
-VLAN 1002  - 1005 = Technologies FDDI et Token Ring
-
-VLAN 1006 - 4094 = VLAN Ethernet - Plage étendue
-
-**CONFIGURER SON VLAN (METHODE 1)**
-
-/* VLAN.png*/
-
-Configuration complète ici :
-https://reussirsonccna.fr/comment-separer-son-reseau-avec-les-vlan/
+Il existe plusieurs types de configurations pour les ports :
+- Mode access (Connexion terminale appartenant à un seul VLan)
+- Mode Trunk (Plusieurs VLAN doivent circuler sur un même lien, comme liaison entre deux switchs, ou un serveur qui à une interface appartenant à plusieurs VLAN)
+- Si VLAN crée et affecté à aucun port, c'est un VLAN de management, on y attribue une @IP
 
 \!/ à un VLAN crée, on attribue un sous-réseau IP dédié.
 
+*Configuration complète ici :*
 
+https://reussirsonccna.fr/comment-separer-son-reseau-avec-les-vlan/
+
+http://www.clemanet.com/switch-vlan-cisco.php
+
+**AVANTAGES**
+- Gain de sécurité
+- Facilite l'administration
+- Gain de fluidité (trafic réseau), éviter les "tempêtes de broadcast".
+
+**NORMES**
+- IEEE 802.1D
+- IEEE 802.1p
+- IEEE 802.1Q (la plus importante, permet encapsuler les trames).
+- IEEE 802.10
+
+### IV - 
 
 
