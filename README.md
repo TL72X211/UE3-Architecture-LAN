@@ -1,5 +1,6 @@
 
 
+
 # Architecture LAN
 
 ## Mots clés :
@@ -129,7 +130,39 @@ Elle nécessite de la part de l'administrateur certaines actions (réglage de l'
 
 
 
-### III - 
+### III - Séparer son réseau
+De nos jours, quand on connecte un appareil, il se configure automatiquement (notamment pour les switch), c'est ce qu'on appelle le plug and play.
+
+Cependant si l'on souhaite que certains PC ne communiquent pas avec d'autres, il est nécessaire de faire des VLAN. Séparer son réseau avec les VLAN revient donc à découper son Switch en plusieurs Switch.
+
+**Première solution :**
+On créer le VLAN sur le switch, puis on attribue ce VLAN sur les ports souhaités. 
+Ex: On a un PC, on veut obligatoirement qu'il soit branché sur un port, et ce port aura pour VLAN 18.
+
+**Seconde solution**
+On configure le switch pour qu'il récupère l'@ MAC qu'il voit transiter  sur le port, envoi cette @MAC vers un serveur VMPS (VLAN Membership Policy Server) qui fera le lien entre l'@ MAC et le VLAN dans une base de données. C'est le serveur VMPS qui indique au Switch quel VLAN il faut attribuer au port.
+\!/ Tout passe par le serveur, et s'il est en panne, tout tombe en panne.
+
+**NB :**
+
+VLAN 0 et 4095 = Réservé pour le système
+
+VLAN 1 = VLAN par défaut
+
+VLAN 2 - 1001 = VLAN Ethernet 
+
+VLAN 1002  - 1005 = Technologies FDDI et Token Ring
+
+VLAN 1006 - 4094 = VLAN Ethernet - Plage étendue
+
+**CONFIGURER SON VLAN (METHODE 1)**
+
+/* VLAN.png*/
+
+Configuration complète ici :
+https://reussirsonccna.fr/comment-separer-son-reseau-avec-les-vlan/
+
+\!/ à un VLAN crée, on attribue un sous-réseau IP dédié.
 
 
 
