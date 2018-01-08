@@ -156,7 +156,7 @@ On configure le switch pour qu'il récupère l'@ MAC qu'il voit transiter  sur l
 
 - VLAN 0 et 4095 = Réservé pour le système
 - VLAN 1 = VLAN par défaut, **réservé pour l'administration par convention**
-- VLAN 2 - 1001 = VLAN Ethernet (Plage standard)
+- VLAN 2 - 1001 = VLAN Ethernet (Plage standard, utilisable par le VTP)
 - VLAN 1002  - 1005 = Technologies FDDI et Token Ring (Sont réservés, ce sont d'anciens protocoles réseau)
 - VLAN 1006 - 4094 = VLAN Ethernet - Plage étendue (Utilisé pour les WAN, utilisé par les FAI)
 - Les VLAN ne peuvent pas communiquer ensemble
@@ -195,6 +195,67 @@ http://ressources-info.fr/tutoriels-reseaux/afficher/5/
 - IEEE 802.10
 
 
-### IV - 
+### IV - Le VTP - Complément des VLAN
 
+Admettons que l'on doive créer 70 VLAN, c'est une configuration fastidieuse, avec probabilité d’erreur élevé.
 
+Le VTP est un protocole de CISCO de niveau 2, des messages VTP sont diffusés lors de création, de suppression ou de modification de VLAN à travers les switchs, grâce à une trame niveau 2, càd une @MAC multicast bien particulière : 01-00-0C-CC-CC-CC.
+
+Il existe 3 modes de VTP :
+
+- VTP Server :  Switch qui crée les annonces VTP
+- VTP client : switch qui reçoit, se synchronise, et propage les annonces VTP
+- VTP Transparent : Switch qui ne traite pas les annonces VTP
+
+**1 - VTP Server :**
+
+Permet à l'administrateur de faire toutes modifications sur les VLAN et de **propager** vers tout les switchs du réseau.
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-server.jpg
+
+**2 - VTP Client** 
+
+**Ne permet pas à l'administrateur de faire des modifications sur les VLAN**, vous recevez un message d'erreur quand vous essayer de créer un VLAN.
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-client.jpg
+
+**3 - VTP Transparent :**
+
+Permet à l'admin de faire toutes les modifications sur les VLAN **en local uniquement**, et **ne propage donc pas** ses modifications. (Pratique pour les maquettes...)
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp-transparent.jpg
+
+**Fonctionnement de la Synchronisation :**
+
+A chaque fois qu'un action s'éffectue, la variable RN (Revision Number) s'incrémente, elle est présente sur chaque Switch, permettant à chaque Switch de voir si le numéro est plus petit, si c'est le cas, ils se synchronisent.
+En plus de l'envoyer à chaque modification, le VTP server l'envoie aussi toute les cinq minutes.
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp1.jpg
+
+**ATTENTION :** Si un client possède un RN plus élevé que le Switch serveur (équipement venant d'un autre réseau), c'est le serveur qui va se synchroniser avec le nouveau switch. Il faut donc penser à remettre le RN à zéro, pour celà , effectuer un basculement en mode transparent puis client.
+
+**VTP Pruning**
+C'est une fonction du Switch Server à activer, qui permet lors de la rémission, de ne répliquer que les VLAN que l'on comporte, économisant la bande passante.
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_pruning1.jpg
+
+**Nota Bene**
+
+- Les messages sont configurés en Trunk (logique)
+-  Le VTP ne gère que les VLAN entre 1 et 1005, le cas échéant, il faut passer en mode transparent et tout faire à la main.
+- Il existe trois versions de VTP, faire attention aux versions
+- La configuration du VTP se trouve dans vlan.dat situé dans la mémoire flash (show flash)
+
+**CONFIGURER SON VTP**
+
+- Configurer domaine VTP, c'est le nom du groupe auquel tout le switch seront. (Cf : Multicast)
+- Configurer le mode du switch
+- Activer le mode pruning (opt)
+- Configurer un mot de passe pour sécuriser les messages VTP
+- Activer la bonne version (v1 active par défaut)
+
+https://reussirsonccna.fr/wp-content/uploads/2012/01/vtp_config1.jpg
+
+Configuration ici : 
+
+https://reussirsonccna.fr/vtp-vlan-trunking-protocol/
