@@ -179,6 +179,10 @@ https://reussirsonccna.fr/comment-separer-son-reseau-avec-les-vlan/
 
 http://www.clemanet.com/switch-vlan-cisco.php
 
+http://ressources-info.fr/tutoriels-reseaux/afficher/5/
+
++ Cisco Packet tracer 
+
 **AVANTAGES**
 - Gain de sécurité
 - Facilite l'administration
@@ -189,6 +193,7 @@ http://www.clemanet.com/switch-vlan-cisco.php
 - IEEE 802.1p
 - IEEE 802.1Q (la plus importante, permet encapsuler les trames).
 - IEEE 802.10
+
 
 ### IV - 
 
