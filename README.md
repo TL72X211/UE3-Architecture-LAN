@@ -58,11 +58,51 @@ Plan d'action :
 Etudes :
 
 - Domaine de diffusion, domaine de collision
+	Deux périphériques sont dans le même domaine de collision lorsque l'envoi de données simultané sur la même voix provoque une corruption de ces données.  
+	Exemples de domaines de collision :  
+
+	 * Domaine de collision avec un Hub/Concentrateur
+	 ![Domaine Collision Hub / Concentrateur](imgFantou/hub_concentrateur.png)
+
+	 * Domaine de collision avec un Bridge
+	 ![Domaine Collision Bridge](imgFantou/bridge.png)
+
+	 * Domaine de collision avec un Switch
+	 ![Domaine Collision Switch](imgFantou/switch.png)
+
+	Le domaine de diffusion est lui délimité par le type d'équipement présent dans le réseau :
+	 * Avec un **Hub**, les messages de diffusion sont transmis car il ne lit pas la couche de niveau 2
+	 * Avec un **Brigde**, les messages de diffusion sont transmis car il lit la couche 2 et l'adresse MAC de destination est "ffff.ffff.ffff"
+	 * Avec un **Switch**, les messages de diffusion sont transmis car il lit la couche 2 et l'adresse MAC de destination est "ffff.ffff.ffff"
+	 * Avec un **Routeur**, les messages de diffusion ne sont pas transmis car il lit la couche de niveau 3 et ne relai pas les messages de broadcast
+
+	Exemples de domaines de diffusion avec Hub, Bridge et Switch :
+	 * Hub
+	 ![Hub](imgFantou/diffusion_hub_concentrateur.png)
+
+	 * Bridge
+	 ![Bridge](imgFantou/diffusion_bridge.png)
+
+	 * Switch
+	 ![Switch](imgFantou/diffusion_switch.png)
+
+	**Exemples de domaines de diffusion et de collision :**
+	 * Diffusion et Collision via Hub et Switch
+	 ![Hub_Switch Collision / Diffusion](imgFantou/hub_switch_collision_diffusion.png)
+
+	 * Diffusion et Collision avec un **routeur**
+	 ![Collision / Diffusion avec Routeur](imgFantou/routeur_collision_diffusion.png)
+
 - Séparer les sous-réseaux
+
 - Architecture 3 couches
+
 - VLSM
+
 - Configurer les switches de façon sécurisée (VTP, port)
+
 - VLAN
+
 
 Réaliser :
 
