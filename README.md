@@ -1,6 +1,6 @@
-#Architecture LAN
+# Architecture LAN
 
-##Mots clés :
+## Mots clés :
 
 - Commutateur
 - Domaine de diffusion
@@ -13,7 +13,7 @@
 - Adresse d'administration
 - Traitement heuristique
 
-##Contexte :
+## Contexte :
 
 Quoi ?
 
@@ -33,7 +33,7 @@ Pourquoi ?
 - Les données passent en clair
 - Même plage IP
 
-##Problématique :
+## Problématique :
 
 - Comment réduire le trafic sur un réseau LAN ?
 
@@ -43,7 +43,7 @@ Généralisation :
 
 - Reconception
 
-##Hypothèse :
+## Hypothèse :
 
 - Créer des sous-réseaux
 - Réaliser un schéma d'adressage
@@ -53,12 +53,24 @@ Généralisation :
 - Redondance
 - Créer des groupes de diffusions
 
-##Plan d'action :
+## Plan d'action :
 
-##Etudes :
+## Etudes :
 
 ### Domaine de diffusion, domaine de collision
-### Séparer les sous-réseaux
+
+Domaine de diffusion : ensemble de périphérique recevant les même annonces de diffusion (même sous-réseau) les données de broadcast se propagent par les hubs les bridges ou les switches (mais pas les routeurs) 
+Un hub ne lit pas le nivea 2 et transmet donc la donnée sur tous les ports
+Un bridge lit le niveau 2 et comprends qu'il s'agit d'un broadcast ( @MAC fff.fff.fff) et transmet la donnée sur son second port
+Un switch lit le niveau 2 et comprends qu'il s'agit d'un broadcast ( @MAC fff.fff.fff) et transmet la donnée sur tous ses ports
+
+Problème de domaines de diffusion trop grands: chaque périphérique accepte et traite tous les paquets de diffusion, solution : découper le réseau en sous-réseaux
+
+Domaine de collision : ensemble d'entités qui partagent le même média de communication, si plusieurs entités envoient des données en même temps elles sont incompréhensibles (corrompues) 
+
+
+
+### Séparer les sous-réseaux sans VLSM
 ### Architecture 3 couches
 
 Modèle hiérarchique en 3 couches, "tree-layers hierarchical internetworking design/model"
@@ -71,18 +83,18 @@ Les trois couches sont :
 - la couche distribution (distribution layer)
 - la couche accès (access layer)
 
-#####**Core layer :**
+##### **Core layer :**
 Elle relie entre eux les différents segments du réseau (sites distants, LANs, étages de la société), il s'agit du backbone
 
 C'est à ce niveau qu'on trouve les routeurs, puisque le trafic est très important à ce niveau les routers et switches doivent être performants.
 
-#####**Distribution layer :**
+##### **Distribution layer :**
 
 Elle filtre, route et autorise ou non les paquets. On divise le réseau en segments et ajoutant plusiers routeurs/switches de distribution et on connecte chacun au core d'un côté et à la couche Access de l'autre
 
 Si notre couche n'est composé que de switches le routage, la délimitation de domaines de broadcast et l'assurance de la tolérance aux pannes se fera sur la couche Core
 
-#####**Access layer**
+##### **Access layer**
 
 Son rôle est simple: connecter les les end-users au réseau et assurer la sécurité
 
@@ -105,9 +117,92 @@ Pour découper un réseaux à l'aide du VLSM on commence avec le plus grand sous
 
 
 ### Configurer les switches de façon sécurisée (VTP, port)
+
+VTP: 
+permet de config les VLAN de tous les switches à partir d'un switch (création, suppression, modification)
+
+Il s'agit d'un protocole propriétaire Cisco de niveau 2.
+Fonctionnement : Les messages VTP diffuse des annonces de création, de suppression ou de modification de VLAN.  Cette diffusion s'effectue à travers tous les switch grâce à un trame de niveau 2 avec une @ de destionation MAC multicast particulière 01-00-0C-CC-CC-CC
+
+architecture VTP:
+
+VTP possède 3 modes VTP : client, transparent ou serveur:
+
+VTP serveur : switch qui créer les annonces VTP (actif par défaut)
+
+Il permet à l'admin de faire toute modification sur les VLANs et de propager automatiquement ses modifications vers tous les switches du réseau.
+
+![](vtp-server.jpg)
+
+VTP client : switch qui reçoit, se synchronise et propage les annonces VTP
+
+Ne permet pas à l'admin de faire des modifs sur les VLANs, il retourne un message d'erreur si on essaye 
+
+![](vtp-client.jpg)
+
+VTP transparent : switch qui ne traite pas les annonces VTP
+
+permet à l'admin de faire toute modif sur les VLANs en local uniquement (utile pour les maquettes)
+
+![](vtp-transparent.jpg)
+
+
+
+synchronisation:
+à chaque créa/suppr/modif de VLAN une variable RN (Revision number) s'incrémente (le switch seveur envoie une message VTP avec la nouvelle valeur RN, les autres switches compare le RN avec le RN d'ils stockent et si le leur est plus petit ils se synchronisent avec le Server et récup la nouvelle BDD. Par défaut le RN est envoyé automatiquement dès une créa/suppr/modif de VLAN puis toutes les 5 min
+
 ### VLAN
 
-##Réaliser :
+Permet de séparer des sous-réseaux en restant sur un même switch il est impossible pour des hôte d'un VLAN de communiquer avec ceux d'un autre VLAN
+
+Configurer un VLAN, il existe principalement 3 façons :
+
+- La plus utilisée : On créé le VLAN sur le switch puis on attribue le VLAN sur les ports souhaités 
+- Beaucoup moins utilisé : On configure le switch pour récupérer l'@MAC qu'il voit transiter sur le port et envoie cette @MAC vers un serveur VWMP (VLAN Membership Policy Server) qui fait le lien entre l'@MAC et et le VLAN attribué via une BDD, le serveur VMPS indique au switch quel VLAN il faut attribuer au port. Pb : si le serveur tombe en panne le réseau l'est également
+- Très utilisé pour téléphonie sur IP : On utilise la 1ere methode pour attribuer le VLAN au PC et pour le téléphone sur IP on utilise le protocole CDP (Cisco Discovery Protocol ) pour attribuer le VLAN voix uniquement
+
+Note : 
+- le nb de VLAN dépends du type de switch (64,128,1024,4096)
+- le VLAN 1 est créé par défaut et tous les ports y appartiennent
+- Il faut créé l'identifiant du VLAN avant de lui attribuer des ports
+- On peut donner un nom à un VLAN
+
+Certains VLAN sont réservés et d'autres créés par défaut 
+
+![](vlan.png)
+
+
+##### **Config d'un  VLAN sur un switch :** 
+
+On créé un VLAN et on le nomme :
+
+	SwitchX# configure terminal
+	SwitchX(config)# vlan 2
+	SwitchX(config-vlan)# name [nom]
+	SwitchX(config-vlan)#end
+
+Attribuer un port à un VLAN
+
+On identifie le port qui doit être dans le VLAN et on le configure sur le VLAN
+
+	SwitchX# configure terminal
+	SwitchX(config)# interface fastethernet 0/1
+	SwitchX(config-if)# switchport access vlan 2 
+	SwitchX(config-if)# end
+
+On peut configurer plusieurs ports à la fois sur un VLAN
+
+	SwitchX# configure terminal
+	SwitchX(config)# interface range fastethernet 0/2 - 7
+	SwitchX(config-if)# switchport access vlan 2 
+	SwitchX(config-if)# end
+
+Note : le port ne sera dans le VLAN que si il est en mode access, on peut savoir si un port est en access ou en trunk avec la commande :
+
+	show interfaces fa0/2 switchport Name: Fa0/2
+
+
+## Réaliser :
 
 ### Proposer une architecture adaptée
 
