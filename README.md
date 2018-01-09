@@ -344,6 +344,37 @@ switchport port-security maximum x
 *x est le nombre autorisés*
 
 
+### VI - Le VLSM
+
+Variable Length Subnet Masks
+
+Le VLSM permet à un réseau de se diviser en parties inégales, c'est un subnet de subnet.
+
+![](http://www.tcpipguide.com/free/diagrams/ipvlsmsplit.png)
+
+
+*Révisions des masques classiques*
+
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/Photos_Tableau/n1.jpg)
+
+2^2 = Nb de subnets (Nb de découpages possibles)
+
+2^n - 2 = nb de r@ = nb de postes à connecter
+
+pas = prendre le bit de poid faible parmis les 1 = on va aller de combien en combien (cf screen 3)
+
+*Révisions des classes*
+
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/Photos_Tableau/n2.jpg)
+
+*On a 4 LAN et 3 WAN ==> 7 subnets ==> 8 subnets pour /27 ==> On prends donc un /27 et on fais le tableau des plages*
+
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/Photos_Tableau/n3.jpg)
+
+*On remarque qu'il nous reste une plage à la fin, on va récupérer nos 3 WAN, car ce ne sont que des @IP uniques, et pas besoin d'une plage si haute. On les regroupes en un et un seul subnet ==> "WAN GLOBAL" qu'on devra mettre en /29 (car 2^3 = 8), on va le placer entre 224 et 255. Sauf que cette plage est trop grande, on va d'abord la découper en /28 (pas de 16) -> On arrive à 240, et là on le divise en 2 /29 pour pouvoir placer notre WAN Global dans le dernier".
+
+![](https://github.com/TL72X211/UE3-Architecture-LAN/blob/Emilien/Screens_Emilien/Photos_Tableau/n4.jpg)
+
 
 
 
