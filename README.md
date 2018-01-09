@@ -94,8 +94,43 @@ Etudes :
 	 ![Collision / Diffusion avec Routeur](imgFantou/routeur_collision_diffusion.png)
 
 - Séparer les sous-réseaux
+	Consiste en découper 'virtuellement' un switch en deux switchs logiques.  
+	Il existe trois principales solutions pour définir l'apartenance à un VLAN :
+	 * On crée le VLAN sur le switch puis on l'attribue sur les ports souhaités.
+	 * On configure le switch pour qu'il récupère l'adresse MAC, il l'envoie à un VMPS (VLAN Membership^Policy Server) qui fait le lien entre VLAN et adresse MAC. Le problème est que si le VMPS tombe en panne, tout le réseau est indisponible.
+	 * On utilise la première solution pour les VLAN des PC et le protocole CDP (Cisco Discovery Protocol) pour les téléphones voix sur IP.
+
+	Remarques :
+	 * Le VLAN 1 est créé par défaut et tous les ports du switch y appartiennent
+	 * On peut donner un nom à un VLAN (optionnel)
+
+	Des plages de VLAN existent et certaines sont réservées :
+	  * 0 & 4095 : Réservé pour le système, non utilisable
+	  * 1 : VLAN par défaut
+	  * 2 - 1001 : VLAN Ethernet
+	  * 1002 - 1005 : VLAN créés par défaut pour les technologies FDDI (Fiber Distributed Data Interface) et Token Ring
+	  * 1006 - 4094 : VLAN Eternet, plage étendue  
+
+
+	Configuration :  
+	Switch# configure terminal  
+	Switch(config)# *vlan* **2**  
+	Switch(config)# *name* Administration  
+	Switch(config)# end
+
+	Attribution du port à un VLAN :  
+	Switch# configure terminal  
+	Switch(config)# *interface fastethernet* **0/1**  
+	Switch(config-if)# *switchport access* **vlan2**  
+	Switch(config-if)# end  
+	Switch# show vlan
+
+	Mode Access :
+
+	Mode Trunks :
 
 - Architecture 3 couches
+	
 
 - VLSM
 
