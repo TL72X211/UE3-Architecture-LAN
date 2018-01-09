@@ -130,7 +130,24 @@ Etudes :
 	Mode Trunks :
 
 - Architecture 3 couches
-	
+	1. Couche Coeur (Core Layer)
+	Couche supérieure, permet de relier les différents segments du réseau : LAN, sites distants, Etage d'une Société, etc.  
+	Ce niveau est généralement constitué de routeurs. Beaucoup de débit engendré, nécessitant des équipements ayant des performances importantes
+	2. Couche Distribution (Distribution Layer)
+	On s'y interesse après les couche coeur. Son rôle est simple, filtrer, router et autoriser ou non les paquets. Ici on divise le réseau en segments avec plusieurs routeurs/switchs, connectés d'un coté à la couche Coeur et de l'autre à la couche Accès.  
+	On devra ici choisir entre Switch (VLAN) et Routeur, pour une petite entreprise des switchs suffisent.  
+	Ces routeurs/switchs vont permettres d'assurer la tolérance aux pannes, de délimiter les zones de broadcast etc.  
+	3. Couche Accès (Access Layer)
+	Son rôle est de connecter les périphériques "end" au réseau. Ici uniquements des switchs (ou des hubs), puisque tous le travail des switchs à déjà été effectué. On ne s'occupe ici que de la connexion des hôtes, en Ethernet, Wi-Fi ou autre. Et on le fait de maniere sécurisée, en désactivant les ports non utilisés, via switchport, etc. Pour cette couche, des switchs basiques suffisent, ils n'auront à gérer que le trafic généré par leurs interfaces.  
+
+	Modèle 3 couches
+	![3 couches](imgFantou/3couches.jpg)
+
+	Conclusion :  
+	 * Ce modèle hiérarchique est une référence, il est très utilisé. Mais il faut bien entendu l’adapter aux besoins de son entreprise.  
+	 * Chaque couche – Core / Distribution / Access – implique des configurations différentes. Notamment la couche Access, qui nécessite de la part de l’administrateur certaines actions (réglage de l’état de chaque port des switchs, mise en place de trunk, sécurité, etc…)
+
+	 * Tous les liens (lien = liaison entre deux points, englobant le côté physique et logiciel) sont doublés/backupés dans la majorité des cas. (voire mon article précédent par exemple)
 
 - VLSM
 
