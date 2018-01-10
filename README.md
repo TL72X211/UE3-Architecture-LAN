@@ -192,7 +192,3 @@ Etudes :
 Réaliser :
 
 - Proposer une architecture adaptée
-
-
-
-Séparer les sous-réseaux = VLSM & VLAN
