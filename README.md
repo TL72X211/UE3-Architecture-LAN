@@ -201,6 +201,108 @@ Note : le port ne sera dans le VLAN que si il est en mode access, on peut savoir
 
 	show interfaces fa0/2 switchport Name: Fa0/2
 
+On peut voir les VLAN configurés avec :
+
+	SwitchX#show vlan
+
+Config les interconnexions :
+	
+	Switch>enable
+	Switch#configure terminal
+	Switch(config)#interface {type d'interface} [numéro d'interface]
+	Switch(config-if)#switchport mode trunk
+	Switch(config-if)#end
+
+Config les serveurs VTP :
+
+	Switch>enable
+	Switch#configure terminal
+	Switch(config)#vtp domain [domaine]
+	Switch(config)#vtp password [password]
+	Switch(config)#vtp version 2
+	Switch(config)#vtp mode server
+
+Config client VTP :
+
+	Switch>enable
+	Switch#configure terminal
+	Switch(config)#vtp domain webtutos.fr
+	Switch(config)#vtp password webtutos
+	Switch(config)#vtp version 2
+	Switch(config)#vtp mode client
+
+Config un VTP transparent : 
+
+	Switch>enable
+	Switch#configure terminal
+	Switch(config)#vtp domain webtutos.fr
+	Switch(config)#vtp password webtutos
+	Switch(config)#vtp version 2
+	Switch(config)#vtp mode transparent
+
+Consulter la bdd :
+
+	Switch#show interfaces trunk
+	Switch#show vtp status
+	Switch#show vlan
+
+### Sécuriser les switches
+
+on peut limiter l'accès à certaines adresses MAC à l'aide de Port-security
+
+Il y a 2 méthodes :
+
+enregistrer manuellement les adresse MAC autorisées
+prendre comme adresse autorisée celle de l'hôte qui se connecte et envoie une trame en premier sur le port
+
+on peut voir où la protection est activée avec 
+
+	show port-security
+
+pour voir les adresses MAC autorisées sur les ports sécurisés :
+
+	show port-security address
+
+pour voir le détail de la sécurité d'une interface:
+
+	show port-security interface fastEthernet x/x
+
+
+
+Sécurisation manuelle :
+
+	Switch>enable
+	Switch#Configure terminal
+	Switch(config)#interface FastEthernet x/x
+	Switch(config-if)#switchport mode access
+	Switch(config-if)#switchport port-security
+	Switch(config-if)#switchport port-security mac-address xxxx.xxxx.xxxx
+
+Sécurisation automatique :
+
+	Switch>enable
+	Switch#Configure terminal
+	Switch(config)#interface FastEthernet 0/3
+	Switch(config-if)#switchport mode access
+	Switch(config-if)#switchport port-security
+	Switch(config-if)#switchport port-security mac-address sticky
+	
+Config la réaction lors de la violation de sécurité :
+
+- La méthode « shutdown » : Elle désactive l’interface lorsque qu’il y a violation.
+- La méthode « protect » : Toutes les trames ayant des adresses MAC sources inconnues sont bloquées et les autres autorisées.
+- La méthode « restrict » : Alerte SNMP envoyée et le compteur de violation est incrémenté.
+
+
+	Switch>enable
+	Switch#Configure terminal
+	Switch(config)#interface FastEthernet 0/3
+	Switch(config-if)#switchport mode access
+	Switch(config-if)#switchport port-security violation [nom_methode]
+
+Note : on peut autoriser plus d'1 adresse MACpar port
+
+	switchport port-security maximum x
 
 ## Réaliser :
 
