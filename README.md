@@ -94,10 +94,70 @@ Etudes :
 	 ![Collision / Diffusion avec Routeur](imgFantou/routeur_collision_diffusion.png)
 
 - Séparer les sous-réseaux
+	Deux méthodes de séparation :
+	 * Le VLSM (Variable Length Subnet Mask) : On emprunte des bits d'adresse à la partie hôte pour définir des sous-réseaux et permettre un adressage en sousou-réseaux.
+	 * Le VLAN (Virtual Local Area Network) : On découpe le réseau en sous-réseau grâce aux interfaces des switchs, qui officient comme des routeurs et permettent de découper le réseau.
+
+- Architecture 3 couches
+	1. Couche Coeur (Core Layer)
+	Couche supérieure, permet de relier les différents segments du réseau : LAN, sites distants, Etage d'une Société, etc.  
+	Ce niveau est généralement constitué de routeurs. Beaucoup de débit engendré, nécessitant des équipements ayant des performances importantes
+	2. Couche Distribution (Distribution Layer)
+	On s'y interesse après les couche coeur. Son rôle est simple, filtrer, router et autoriser ou non les paquets. Ici on divise le réseau en segments avec plusieurs routeurs/switchs, connectés d'un coté à la couche Coeur et de l'autre à la couche Accès.  
+	On devra ici choisir entre Switch (VLAN) et Routeur, pour une petite entreprise des switchs suffisent.  
+	Ces routeurs/switchs vont permettres d'assurer la tolérance aux pannes, de délimiter les zones de broadcast etc.  
+	3. Couche Accès (Access Layer)
+	Son rôle est de connecter les périphériques "end" au réseau. Ici uniquements des switchs (ou des hubs), puisque tous le travail des switchs à déjà été effectué. On ne s'occupe ici que de la connexion des hôtes, en Ethernet, Wi-Fi ou autre. Et on le fait de maniere sécurisée, en désactivant les ports non utilisés, via switchport, etc. Pour cette couche, des switchs basiques suffisent, ils n'auront à gérer que le trafic généré par leurs interfaces.  
+
+	Modèle 3 couches  
+	![3 couches](imgFantou/3couches.jpg)
+
+	Conclusion :  
+	 * Ce modèle hiérarchique est une référence, il est très utilisé. Mais il faut bien entendu l’adapter aux besoins de son entreprise.  
+	 * Chaque couche – Core / Distribution / Access – implique des configurations différentes. Notamment la couche Access, qui nécessite de la part de l’administrateur certaines actions (réglage de l’état de chaque port des switchs, mise en place de trunk, sécurité, etc…)
+	 * Tous les liens (lien = liaison entre deux points, englobant le côté physique et logiciel) sont doublés/backupés dans la majorité des cas. (voire mon article précédent par exemple)
+
+- VLSM
+	(Variable Length Subnet Mask)   
+	Méthode permettant en empruntant un ou plusieurs bits à la partie hôte d'une adresse de créer des sous-réseaux plus ou moins importants. Pour utiliser le Masque à L.Variable on commence toujours par répondre aux besoins du plus grand sous-réseau.
+
+	Le découpage en sous-réseaux avec la méthode VLSM :
+	![Découpage VLSM1](imgFantou/vlsm1.png)
+
+	![Découpage VLSM2](imgFantou/vlsm2.png)
+
+- Configurer les switches de façon sécurisée (VTP, port)
+	Sur les switchs Cisco, on peut effectuer un contrôle des ports en limitant l'accès à certaines adresses MAC. On utilise pour cela l'option "Port-Security".  
+	Il existe deux méthodes de sécurisation :
+	 * Sécurisation manuelle :  
+	 Switch> enable  
+	 Switch# configure terminal  
+	 Switch(config)# interface FastEthernet 0/2  
+	 Switch(config-if)# switchport mode access  
+	 Switch(config-if)# switchport port-security  
+	 Switch(config-if)# switchport port-security mac-address 0001.4299.E010 (l'adresse est sous la forme xxxx.xxxx.xxxx et non xx.xx.xx.xx.xx.xx.xx.xx)
+
+	 * Sécurisation automatique :  
+	 Switch> enable
+	 Switch# configure terminal  
+	 Switch(config)# interface FastEthernet 0/3  
+	 Switch(config-if)# switchport mode access  
+	 Switch(config-if)# switchport port-security  
+	 Switch(config-if)# switchport port-security mac-address sticky  
+	 Il suffit ensuite depuis l'hôte qui doit pouvoir accéder à ce port de ping au travers du routeur via cette interface et l'adresse MAC de celui-ci sera enregistrée
+
+	On peut également configurer la réaction du switch en cas d'accès non authorisé via la commande **switchport port-security violation** et l'option correspondante :
+	 * **shutdown**, qui désactive l'interface (il faut ensuite aller la désactiver puis réactiver manuellement  avec les commandes 'shutdown' et 'no shutdown' dans la config d'interface correspodante)
+	 * **protect**, qui bloque toutes les trames avec des adresses MAC inconnues
+	 * **restrict**, qui envoie une alerte SNMP et incrémente le compteur de violation
+
+	On peut enfin augmenter le nombre d'adresses MAC autorisées via la commande 'switchport port-security maximum *x*' avec x le nombre d'adresse MAC
+
+- VLAN
 	Consiste en découper 'virtuellement' un switch en deux switchs logiques.  
 	Il existe trois principales solutions pour définir l'apartenance à un VLAN :
 	 * On crée le VLAN sur le switch puis on l'attribue sur les ports souhaités.
-	 * On configure le switch pour qu'il récupère l'adresse MAC, il l'envoie à un VMPS (VLAN Membership^Policy Server) qui fait le lien entre VLAN et adresse MAC. Le problème est que si le VMPS tombe en panne, tout le réseau est indisponible.
+	 * On configure le switch pour qu'il récupère l'adresse MAC, il l'envoie à un VMPS (VLAN Membership Policy Server) qui fait le lien entre VLAN et adresse MAC. Le problème est que si le VMPS tombe en panne, tout le réseau est indisponible.
 	 * On utilise la première solution pour les VLAN des PC et le protocole CDP (Cisco Discovery Protocol) pour les téléphones voix sur IP.
 
 	Remarques :
@@ -113,51 +173,26 @@ Etudes :
 
 
 	Configuration :  
-	Switch# configure terminal  
-	Switch(config)# *vlan* **2**  
-	Switch(config)# *name* Administration  
-	Switch(config)# end
+	 Switch# configure terminal  
+	 Switch(config)# *vlan* **2**  
+	 Switch(config)# *name* Administration  
+	 Switch(config)# end
 
 	Attribution du port à un VLAN :  
-	Switch# configure terminal  
-	Switch(config)# *interface fastethernet* **0/1**  
-	Switch(config-if)# *switchport access* **vlan2**  
-	Switch(config-if)# end  
-	Switch# show vlan
+	 Switch# configure terminal  
+	 Switch(config)# *interface fastethernet* **0/1**  
+	 Switch(config-if)# *switchport access* **vlan2**  
+	 Switch(config-if)# end  
+	 Switch# show vlan
 
-	Mode Access :
+	Mode Access : Ne recevra que les paquets qui lui sont destinés. (Seul le VLAN configuré est visible)
 
-	Mode Trunks :
-
-- Architecture 3 couches
-	1. Couche Coeur (Core Layer)
-	Couche supérieure, permet de relier les différents segments du réseau : LAN, sites distants, Etage d'une Société, etc.  
-	Ce niveau est généralement constitué de routeurs. Beaucoup de débit engendré, nécessitant des équipements ayant des performances importantes
-	2. Couche Distribution (Distribution Layer)
-	On s'y interesse après les couche coeur. Son rôle est simple, filtrer, router et autoriser ou non les paquets. Ici on divise le réseau en segments avec plusieurs routeurs/switchs, connectés d'un coté à la couche Coeur et de l'autre à la couche Accès.  
-	On devra ici choisir entre Switch (VLAN) et Routeur, pour une petite entreprise des switchs suffisent.  
-	Ces routeurs/switchs vont permettres d'assurer la tolérance aux pannes, de délimiter les zones de broadcast etc.  
-	3. Couche Accès (Access Layer)
-	Son rôle est de connecter les périphériques "end" au réseau. Ici uniquements des switchs (ou des hubs), puisque tous le travail des switchs à déjà été effectué. On ne s'occupe ici que de la connexion des hôtes, en Ethernet, Wi-Fi ou autre. Et on le fait de maniere sécurisée, en désactivant les ports non utilisés, via switchport, etc. Pour cette couche, des switchs basiques suffisent, ils n'auront à gérer que le trafic généré par leurs interfaces.  
-
-	Modèle 3 couches
-	![3 couches](imgFantou/3couches.jpg)
-
-	Conclusion :  
-	 * Ce modèle hiérarchique est une référence, il est très utilisé. Mais il faut bien entendu l’adapter aux besoins de son entreprise.  
-	 * Chaque couche – Core / Distribution / Access – implique des configurations différentes. Notamment la couche Access, qui nécessite de la part de l’administrateur certaines actions (réglage de l’état de chaque port des switchs, mise en place de trunk, sécurité, etc…)
-
-	 * Tous les liens (lien = liaison entre deux points, englobant le côté physique et logiciel) sont doublés/backupés dans la majorité des cas. (voire mon article précédent par exemple)
-
-- VLSM
-
-- Configurer les switches de façon sécurisée (VTP, port)
-
-- VLAN
-
+	Mode Trunks : Permet de relier deux équipements de transmission (switch-switch / switch-routeur) afin que tous les paquets puissent passer (Tous les VLAN sont visibles)
 
 Réaliser :
 
 - Proposer une architecture adaptée
 
 
+
+Séparer les sous-réseaux = VLSM & VLAN
